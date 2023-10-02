@@ -52,15 +52,15 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           # Your image name
-          images: akraradets/ait-ml-dash
-          tags: type=semver,pattern={{raw}}
+          images: munthitra/carapp
+          tags: ${{ github.ref_name }}
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: ./App
           file: ./App/.Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ github.ref_name }}
   deploy:
     environment: Production
     needs: build-test
@@ -76,6 +76,6 @@ jobs:
           proxy_username: ${{ secrets.USERNAME }}
           proxy_key: ${{ secrets.KEY }}
           script: |
-            tag=${{ github.ref_name }} docker compose -f st121413/docker-compose.yaml down
-            tag=${{ github.ref_name }} docker compose -f st121413/docker-compose.yaml up -d
+            tag=${{ github.ref_name }} docker compose -f A3_docker-compose.yaml down
+            tag=${{ github.ref_name }} docker compose -f A3_docker-compose.yaml up -d
   
