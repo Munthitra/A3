@@ -6,6 +6,15 @@ import dash_bootstrap_components as dbc
 import math
 import numpy as np
 import pickle
+import os
+import mlflow
+
+# Initialize the app - incorporate a Dash Bootstrap theme
+external_stylesheets = [dbc.themes.CERULEAN]
+app = Dash(__name__, external_stylesheets=external_stylesheets)
+
+mlflow.set_tracking_uri(os.environ['MLFLOW_TRACKING_URI'])
+model = mlflow.pyfunc.load_model(model_uri=f"models:/{os.environ['APP_MODEL_NAME']}/1") # Load model
 
 #Import data file
 # df = pd.read_csv(r'C:\Users\Munthitra\Desktop\Chaklam\a1\code\Cars (1).csv')
@@ -32,9 +41,18 @@ new_df['Mileage_Value'] = df['Mileage_Value'].str.split().str[0].astype(float)
 new_df['Engine_Value'] = df['Engine_Value'].str.split().str[0].astype('float64')
 new_df['Max_Power_Value'] = new_df['Max_Power_Value'].str.split().str[0].astype('float64')
 
-# Initialize the app - incorporate a Dash Bootstrap theme
-external_stylesheets = [dbc.themes.CERULEAN]
-app = Dash(__name__, external_stylesheets=external_stylesheets)
+def features_input(Max_Power_Value,Mileage_Value,km_driven):
+    if Max_Power_Value == None:
+        Max_Power_Value = df["Max_Power_Value"].median()
+    if Mileage_Value == None:
+        Mileage_Value = df["Mileage_Value"].mean()
+    if km_driven == None:
+        km_driven = df["km_driven"].median()
+
+    return np.array([[Max_Power_Value, Mileage_Value, math.log(km_driven)]])
+
+def output(sample):
+    return model.predict(sample)
 
 # App layout
 app.layout = dbc.Container([
@@ -66,15 +84,9 @@ app.layout = dbc.Container([
 )
 
 def prediction (Max_Power_Value,Mileage_Value,km_driven,submit):
-    if Max_Power_Value == None:
-        Max_Power_Value = df["Max_Power_Value"].median()
-    if Mileage_Value == None:
-        Mileage_Value = df["Mileage_Value"].mean()
-    if km_driven == None:
-        km_driven = df["km_driven"].median()
-    model = pickle.load(open("/root/code/124022 car_prediction.model", 'rb')) # Import model
-    sample = np.array([[Max_Power_Value, Mileage_Value, math.log(km_driven)]]) 
-    result = np.exp(model.predict(sample)) #Predict price
+    
+    sample = features_input(Max_Power_Value, Mileage_Value, km_driven)
+    result = output(sample) #Predict price
     return f"The predictive car price is {int(result[0])}"
   
 # Run the app

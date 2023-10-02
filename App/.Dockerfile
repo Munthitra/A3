@@ -1,4 +1,4 @@
-FROM python:3.11.4-bookworm
+FROM python:3.10.13-bookworm
 
 WORKDIR /root/code
 
@@ -10,6 +10,7 @@ RUN pip3 install scikit-learn
 RUN pip3 install xgboost
 RUN pip3 install mlflow
 RUN pip3 install cloudpickle
+RUN pip3 install pytest
 
 COPY ./code/ /root/code/
 

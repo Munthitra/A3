@@ -1,4 +1,4 @@
-version: '3.9'
+version: '3.10.13'
 
 services:
 
@@ -17,3 +17,5 @@ services:
     environment:
       - HOST=0.0.0.0
       - PORT=80
+    env_file:
+      - .env
