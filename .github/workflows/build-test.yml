@@ -60,7 +60,7 @@ jobs:
           context: ./App
           file: ./App/.Dockerfile
           push: true
-          tags: ${{ github.ref_name }}
+          tags: ${{ steps.meta.outputs.tags }}
   deploy:
     environment: Production
     needs: build-test
