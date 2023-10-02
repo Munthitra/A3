@@ -6,7 +6,7 @@ services:
     command: python3 main.py
     # command: tail -f /dev/null
     # The image I upload to my docker hub
-    image: munthitra/carapp:a3
+    image: munthitra/carapp:v1.4
     # For MAC M1 user
     platform: linux/x86_64
     # This will ask DASH to run on 0.0.0.0 and port 80
